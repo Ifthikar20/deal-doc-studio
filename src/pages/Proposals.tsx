@@ -14,6 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const mockProposals = [
   { id: 1, client: "Acme Corp", title: "Website Redesign", status: "Draft", date: "2025-10-05" },
@@ -79,39 +80,134 @@ export default function Proposals() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockProposals.map((proposal) => (
-          <Card
-            key={proposal.id}
-            className="hover:shadow-lg transition-all cursor-pointer border-border/50"
-            onClick={() => navigate(`/proposals/${proposal.id}`)}
-          >
-            <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <FileText className="w-6 h-6 text-primary" />
-              </div>
-              <CardTitle>{proposal.title}</CardTitle>
-              <CardDescription>{proposal.client}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{proposal.date}</span>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    proposal.status === "Approved"
-                      ? "bg-green-500/10 text-green-600"
-                      : proposal.status === "Sent"
-                      ? "bg-blue-500/10 text-blue-600"
-                      : "bg-yellow-500/10 text-yellow-600"
-                  }`}
-                >
-                  {proposal.status}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="bg-muted/50">
+          <TabsTrigger value="all">All Proposals</TabsTrigger>
+          <TabsTrigger value="draft">Draft</TabsTrigger>
+          <TabsTrigger value="sent">Sent</TabsTrigger>
+          <TabsTrigger value="approved">Approved</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockProposals.map((proposal) => (
+              <Card
+                key={proposal.id}
+                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                onClick={() => navigate(`/proposals/${proposal.id}`)}
+              >
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <FileText className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle>{proposal.title}</CardTitle>
+                  <CardDescription>{proposal.client}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">{proposal.date}</span>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        proposal.status === "Approved"
+                          ? "bg-green-500/10 text-green-600"
+                          : proposal.status === "Sent"
+                          ? "bg-blue-500/10 text-blue-600"
+                          : "bg-yellow-500/10 text-yellow-600"
+                      }`}
+                    >
+                      {proposal.status}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="draft" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockProposals.filter(p => p.status === "Draft").map((proposal) => (
+              <Card
+                key={proposal.id}
+                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                onClick={() => navigate(`/proposals/${proposal.id}`)}
+              >
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <FileText className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle>{proposal.title}</CardTitle>
+                  <CardDescription>{proposal.client}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">{proposal.date}</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-600">
+                      {proposal.status}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="sent" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockProposals.filter(p => p.status === "Sent").map((proposal) => (
+              <Card
+                key={proposal.id}
+                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                onClick={() => navigate(`/proposals/${proposal.id}`)}
+              >
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <FileText className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle>{proposal.title}</CardTitle>
+                  <CardDescription>{proposal.client}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">{proposal.date}</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600">
+                      {proposal.status}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="approved" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockProposals.filter(p => p.status === "Approved").map((proposal) => (
+              <Card
+                key={proposal.id}
+                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                onClick={() => navigate(`/proposals/${proposal.id}`)}
+              >
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <FileText className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle>{proposal.title}</CardTitle>
+                  <CardDescription>{proposal.client}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">{proposal.date}</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600">
+                      {proposal.status}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
