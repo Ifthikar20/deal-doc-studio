@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,119 +13,27 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useProposal } from "@/contexts/ProposalContext";
 
 // Card imports
-import TimelineCard, { TimelinePhase } from "@/components/cards/TimelineCard";
-import PricingCard, { PricingSection } from "@/components/cards/PricingCard";
-import ImageCard, { ImageCardData } from "@/components/cards/ImageCard";
-import VideoCard, { VideoCardData } from "@/components/cards/VideoCard";
-import TeamExpertiseCard, { TeamMember } from "@/components/cards/TeamExpertiseCard";
-import ImplementationPlanCard, { ImplementationStep } from "@/components/cards/ImplementationPlanCard";
-import RiskMitigationCard, { Risk } from "@/components/cards/RiskMitigationCard";
-import SupportMaintenanceCard, { SupportItem } from "@/components/cards/SupportMaintenanceCard";
-import TextSectionCard, { TextSectionData } from "@/components/cards/TextSectionCard";
-
-type ProposalCard =
-  | { id: string; type: "timeline"; data: TimelinePhase[] }
-  | { id: string; type: "pricing"; data: PricingSection[] }
-  | { id: string; type: "image"; data: ImageCardData }
-  | { id: string; type: "video"; data: VideoCardData }
-  | { id: string; type: "team"; data: TeamMember[] }
-  | { id: string; type: "implementation"; data: ImplementationStep[] }
-  | { id: string; type: "risk"; data: Risk[] }
-  | { id: string; type: "support"; data: SupportItem[] }
-  | { id: string; type: "text"; data: TextSectionData };
+import TimelineCard from "@/components/cards/TimelineCard";
+import PricingCard from "@/components/cards/PricingCard";
+import ImageCard from "@/components/cards/ImageCard";
+import VideoCard from "@/components/cards/VideoCard";
+import TeamExpertiseCard from "@/components/cards/TeamExpertiseCard";
+import ImplementationPlanCard from "@/components/cards/ImplementationPlanCard";
+import RiskMitigationCard from "@/components/cards/RiskMitigationCard";
+import SupportMaintenanceCard from "@/components/cards/SupportMaintenanceCard";
+import TextSectionCard from "@/components/cards/TextSectionCard";
 
 export default function ProposalEditor() {
   const navigate = useNavigate();
   const { id } = useParams();
-
-  const [proposalData, setProposalData] = useState({
-    title: "Website Redesign",
-    client: "Acme Corp",
-    clientAddress: "123 Main St, Suite 100, City, State 12345",
-    description: "Complete website redesign with modern UI/UX",
-    jobNumber: "302798",
-    preparedBy: "Your Name",
-    version: "1.0",
-    eventLocation: "Client Office",
-    eventAddress: "123 Event Venue, City, State 12345",
-    eventStartDate: "",
-    eventEndDate: "",
-    contactName: "",
-    contactPhone: "",
-    contactEmail: "",
-    termsAndConditions: "1. Payment Terms: 50% upfront, 50% upon completion.\n2. Project timeline is subject to client feedback and approval times.\n3. Additional revisions beyond the agreed scope will be charged separately.\n4. All intellectual property rights transfer upon final payment.\n5. Either party may terminate with 30 days written notice.",
-  });
-
-  const [cards, setCards] = useState<ProposalCard[]>([
-    {
-      id: "1",
-      type: "text",
-      data: { title: "Project Overview", content: "This section describes the overall project scope and objectives." },
-    },
-    {
-      id: "2",
-      type: "timeline",
-      data: [
-        { phase: "Discovery & Planning", duration: "2 weeks", tasks: "Requirements gathering, research" },
-        { phase: "Design", duration: "3 weeks", tasks: "Wireframes, mockups, prototypes" },
-        { phase: "Development", duration: "6 weeks", tasks: "Frontend and backend implementation" },
-      ],
-    },
-    {
-      id: "3",
-      type: "pricing",
-      data: [
-        {
-          id: "1",
-          title: "Main Deliverables",
-          items: [
-            { description: "UI/UX Design", quantity: 1, rate: 15000, duration: "2 weeks", discount: 0, notes: [] },
-            { description: "Frontend Development", quantity: 1, rate: 20000, duration: "3 weeks", discount: 0, notes: [] },
-          ],
-        },
-      ],
-    },
-  ]);
-
-  const addCard = (type: ProposalCard["type"]) => {
-    const newCard: ProposalCard = (() => {
-      switch (type) {
-        case "timeline":
-          return { id: Date.now().toString(), type: "timeline", data: [{ phase: "", duration: "", tasks: "" }] };
-        case "pricing":
-          return { id: Date.now().toString(), type: "pricing", data: [{ id: Date.now().toString(), title: "New Section", items: [] }] };
-        case "image":
-          return { id: Date.now().toString(), type: "image", data: { url: "", caption: "", alt: "" } };
-        case "video":
-          return { id: Date.now().toString(), type: "video", data: { url: "", caption: "", type: "youtube" } };
-        case "team":
-          return { id: Date.now().toString(), type: "team", data: [{ name: "", role: "", bio: "", image: "" }] };
-        case "implementation":
-          return { id: Date.now().toString(), type: "implementation", data: [{ title: "", description: "", duration: "" }] };
-        case "risk":
-          return { id: Date.now().toString(), type: "risk", data: [{ risk: "", mitigation: "", impact: "medium" }] };
-        case "support":
-          return { id: Date.now().toString(), type: "support", data: [{ title: "", description: "", duration: "", cost: "" }] };
-        case "text":
-          return { id: Date.now().toString(), type: "text", data: { title: "New Section", content: "" } };
-      }
-    })();
-    setCards([...cards, newCard]);
-  };
-
-  const updateCard = (id: string, data: any) => {
-    setCards(cards.map((card) => (card.id === id ? { ...card, data } : card)));
-  };
-
-  const removeCard = (id: string) => {
-    setCards(cards.filter((card) => card.id !== id));
-  };
+  const { proposalData, setProposalData, cards, addCard, updateCard, removeCard } = useProposal();
 
   const calculateGrandTotal = () => {
     return cards
-      .filter((card): card is Extract<ProposalCard, { type: "pricing" }> => card.type === "pricing")
+      .filter((card): card is Extract<typeof cards[number], { type: "pricing" }> => card.type === "pricing")
       .reduce((total, card) => {
         return (
           total +
@@ -159,7 +66,7 @@ export default function ProposalEditor() {
     navigate("/proposals");
   };
 
-  const renderCard = (card: ProposalCard) => {
+  const renderCard = (card: typeof cards[number]) => {
     switch (card.type) {
       case "timeline":
         return <TimelineCard data={card.data} onUpdate={(data) => updateCard(card.id, data)} onRemove={() => removeCard(card.id)} />;
