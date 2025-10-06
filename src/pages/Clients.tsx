@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ const mockClients = [
 
 export default function Clients() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -79,7 +81,11 @@ export default function Clients() {
         <TabsContent value="all" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {mockClients.map((client) => (
-              <Card key={client.id} className="hover:shadow-lg transition-all cursor-pointer border-border/50">
+              <Card 
+                key={client.id} 
+                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                onClick={() => navigate(`/clients/${client.id}`)}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4">
@@ -99,7 +105,14 @@ export default function Clients() {
                     <Phone className="w-4 h-4" />
                     <span>{client.phone}</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-4">
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/clients/${client.id}`);
+                    }}
+                  >
                     View Details
                   </Button>
                 </CardContent>
@@ -111,7 +124,11 @@ export default function Clients() {
         <TabsContent value="active" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {mockClients.filter(c => c.status === "active").map((client) => (
-              <Card key={client.id} className="hover:shadow-lg transition-all cursor-pointer border-border/50">
+              <Card 
+                key={client.id} 
+                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                onClick={() => navigate(`/clients/${client.id}`)}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4">
@@ -131,7 +148,14 @@ export default function Clients() {
                     <Phone className="w-4 h-4" />
                     <span>{client.phone}</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-4">
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/clients/${client.id}`);
+                    }}
+                  >
                     View Details
                   </Button>
                 </CardContent>
@@ -143,7 +167,11 @@ export default function Clients() {
         <TabsContent value="pending" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {mockClients.filter(c => c.status === "pending").map((client) => (
-              <Card key={client.id} className="hover:shadow-lg transition-all cursor-pointer border-border/50">
+              <Card 
+                key={client.id} 
+                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                onClick={() => navigate(`/clients/${client.id}`)}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4">
@@ -163,7 +191,14 @@ export default function Clients() {
                     <Phone className="w-4 h-4" />
                     <span>{client.phone}</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-4">
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/clients/${client.id}`);
+                    }}
+                  >
                     View Details
                   </Button>
                 </CardContent>
