@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Mail, Phone, Building2 } from "lucide-react";
+import { ClientCanvas } from "@/components/ClientCanvas";
 import {
   Dialog,
   DialogContent,
@@ -73,19 +74,22 @@ export default function Clients() {
         {mockClients.map((client) => (
           <Card 
             key={client.id} 
-            className="group hover:shadow-md transition-all duration-300 cursor-pointer border-border/40 hover:border-primary/20 bg-card/50 backdrop-blur-sm overflow-hidden"
+            className="group hover:shadow-md transition-all duration-300 cursor-pointer border-border/40 hover:border-primary/20 overflow-hidden"
             onClick={() => navigate(`/proposals?client=${encodeURIComponent(client.name)}`)}
           >
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <Building2 className="w-5 h-5 text-primary" />
-                </div>
-                <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+            <div className="relative h-40 overflow-hidden">
+              <ClientCanvas clientId={client.id} clientName={client.name} />
+              <div className="absolute top-3 right-3">
+                <span className="text-xs font-medium text-white bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
                   {client.projects} proposals
                 </span>
               </div>
-              <CardTitle className="text-xl group-hover:text-primary transition-colors">{client.name}</CardTitle>
+            </div>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl group-hover:text-primary transition-colors flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-primary" />
+                {client.name}
+              </CardTitle>
               <CardDescription className="capitalize text-xs">{client.status} client</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 pt-0">
