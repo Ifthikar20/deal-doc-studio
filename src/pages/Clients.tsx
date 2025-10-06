@@ -69,42 +69,34 @@ export default function Clients() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {mockClients.map((client) => (
           <Card 
             key={client.id} 
-            className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+            className="group hover:shadow-md transition-all duration-300 cursor-pointer border-border/40 hover:border-primary/20 bg-card/50 backdrop-blur-sm overflow-hidden"
             onClick={() => navigate(`/proposals?client=${encodeURIComponent(client.name)}`)}
           >
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4">
-                  <Building2 className="w-6 h-6 text-primary-foreground" />
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <Building2 className="w-5 h-5 text-primary" />
                 </div>
-                <span className="text-xs text-muted-foreground">{client.projects} proposals</span>
+                <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                  {client.projects} proposals
+                </span>
               </div>
-              <CardTitle>{client.name}</CardTitle>
-              <CardDescription className="capitalize">{client.status} client</CardDescription>
+              <CardTitle className="text-xl group-hover:text-primary transition-colors">{client.name}</CardTitle>
+              <CardDescription className="capitalize text-xs">{client.status} client</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Mail className="w-4 h-4" />
-                <span>{client.email}</span>
+            <CardContent className="space-y-2 pt-0">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">{client.email}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Phone className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Phone className="w-3.5 h-3.5 flex-shrink-0" />
                 <span>{client.phone}</span>
               </div>
-              <Button 
-                variant="outline" 
-                className="w-full mt-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/proposals?client=${encodeURIComponent(client.name)}`);
-                }}
-              >
-                View Proposals
-              </Button>
             </CardContent>
           </Card>
         ))}
