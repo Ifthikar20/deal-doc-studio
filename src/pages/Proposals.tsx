@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Plus, Upload, LayoutGrid, List, MapPin, Calendar, DollarSign } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { FileText, Plus, Upload, LayoutGrid, List, MapPin, Calendar, DollarSign, X } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import proposalBg1 from "@/assets/proposal-bg-1.jpg";
@@ -61,15 +61,43 @@ const mockProposals = [
 
 export default function Proposals() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"structured" | "list">("structured");
+  
+  const clientFilter = searchParams.get("client");
+  
+  const filteredProposals = useMemo(() => {
+    if (!clientFilter) return mockProposals;
+    return mockProposals.filter(p => p.client === clientFilter);
+  }, [clientFilter]);
+  
+  const clearFilter = () => {
+    setSearchParams({});
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Proposals</h1>
-          <p className="text-muted-foreground">Create and manage your proposals</p>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold text-foreground">Proposals</h1>
+            {clientFilter && (
+              <Badge variant="secondary" className="gap-2">
+                Client: {clientFilter}
+                <X 
+                  className="w-3 h-3 cursor-pointer hover:text-destructive" 
+                  onClick={clearFilter}
+                />
+              </Badge>
+            )}
+          </div>
+          <p className="text-muted-foreground">
+            {clientFilter 
+              ? `Showing proposals for ${clientFilter}` 
+              : "Create and manage your proposals"
+            }
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center border rounded-lg p-1 bg-muted/30">
@@ -149,7 +177,7 @@ export default function Proposals() {
         <TabsContent value="all" className="mt-6">
           {viewMode === "structured" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockProposals.map((proposal) => (
+              {filteredProposals.map((proposal) => (
                 <Card
                   key={proposal.id}
                   className="hover:shadow-xl transition-all cursor-pointer border-border/50 overflow-hidden group"
@@ -207,7 +235,7 @@ export default function Proposals() {
             </div>
           ) : (
             <div className="space-y-3">
-              {mockProposals.map((proposal) => (
+              {filteredProposals.map((proposal) => (
                 <Card
                   key={proposal.id}
                   className="hover:shadow-lg transition-all cursor-pointer border-border/50"
@@ -254,7 +282,7 @@ export default function Proposals() {
         <TabsContent value="draft" className="mt-6">
           {viewMode === "structured" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockProposals.filter(p => p.status === "Draft").map((proposal) => (
+              {filteredProposals.filter(p => p.status === "Draft").map((proposal) => (
                 <Card
                   key={proposal.id}
                   className="hover:shadow-xl transition-all cursor-pointer border-border/50 overflow-hidden group"
@@ -304,7 +332,7 @@ export default function Proposals() {
             </div>
           ) : (
             <div className="space-y-3">
-              {mockProposals.filter(p => p.status === "Draft").map((proposal) => (
+              {filteredProposals.filter(p => p.status === "Draft").map((proposal) => (
                 <Card
                   key={proposal.id}
                   className="hover:shadow-lg transition-all cursor-pointer border-border/50"
@@ -343,7 +371,7 @@ export default function Proposals() {
         <TabsContent value="sent" className="mt-6">
           {viewMode === "structured" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockProposals.filter(p => p.status === "Sent").map((proposal) => (
+              {filteredProposals.filter(p => p.status === "Sent").map((proposal) => (
                 <Card
                   key={proposal.id}
                   className="hover:shadow-xl transition-all cursor-pointer border-border/50 overflow-hidden group"
@@ -393,7 +421,7 @@ export default function Proposals() {
             </div>
           ) : (
             <div className="space-y-3">
-              {mockProposals.filter(p => p.status === "Sent").map((proposal) => (
+              {filteredProposals.filter(p => p.status === "Sent").map((proposal) => (
                 <Card
                   key={proposal.id}
                   className="hover:shadow-lg transition-all cursor-pointer border-border/50"
@@ -432,7 +460,7 @@ export default function Proposals() {
         <TabsContent value="approved" className="mt-6">
           {viewMode === "structured" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockProposals.filter(p => p.status === "Approved").map((proposal) => (
+              {filteredProposals.filter(p => p.status === "Approved").map((proposal) => (
                 <Card
                   key={proposal.id}
                   className="hover:shadow-xl transition-all cursor-pointer border-border/50 overflow-hidden group"
@@ -482,7 +510,7 @@ export default function Proposals() {
             </div>
           ) : (
             <div className="space-y-3">
-              {mockProposals.filter(p => p.status === "Approved").map((proposal) => (
+              {filteredProposals.filter(p => p.status === "Approved").map((proposal) => (
                 <Card
                   key={proposal.id}
                   className="hover:shadow-lg transition-all cursor-pointer border-border/50"

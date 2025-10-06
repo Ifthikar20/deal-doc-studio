@@ -74,7 +74,7 @@ export default function Clients() {
           <Card 
             key={client.id} 
             className="hover:shadow-lg transition-all cursor-pointer border-border/50"
-            onClick={() => navigate(`/clients/${client.id}`)}
+            onClick={() => navigate(`/proposals?client=${encodeURIComponent(client.name)}`)}
           >
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -100,10 +100,10 @@ export default function Clients() {
                 className="w-full mt-4"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/clients/${client.id}`);
+                  navigate(`/proposals?client=${encodeURIComponent(client.name)}`);
                 }}
               >
-                View Details
+                View Proposals
               </Button>
             </CardContent>
           </Card>
