@@ -12,7 +12,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const items = [
-  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Clients", url: "/clients", icon: Users },
   { title: "Templates", url: "/templates", icon: Layout },
 ];
@@ -31,7 +31,6 @@ export function AppSidebar() {
                       <SidebarMenuButton asChild>
                         <NavLink
                           to={item.url}
-                          end={item.url === "/"}
                           className={({ isActive }) =>
                             `flex items-center justify-center w-12 h-12 rounded-lg transition-all ${
                               isActive
