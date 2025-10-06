@@ -124,24 +124,27 @@ export default function Proposals() {
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2">
                 <Upload className="w-4 h-4" />
-                Import PDF
+                Create Client from Document
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Import Proposal from PDF</DialogTitle>
+                <DialogTitle>Create Client from Document</DialogTitle>
                 <DialogDescription>
-                  Upload an existing PDF to create a new digital proposal
+                  Upload an existing document (PDF, Word, etc.) to extract client information and create a new client profile
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="client-select">Select Client</Label>
-                  <Input id="client-select" placeholder="Choose a client" />
+                  <Label htmlFor="document-upload">Upload Document</Label>
+                  <Input id="document-upload" type="file" accept=".pdf,.doc,.docx,.txt" />
+                  <p className="text-xs text-muted-foreground">
+                    Supported formats: PDF, Word, Text
+                  </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="pdf-upload">Upload PDF</Label>
-                  <Input id="pdf-upload" type="file" accept=".pdf" />
+                  <Label htmlFor="client-name">Client Name (Optional)</Label>
+                  <Input id="client-name" placeholder="Auto-extracted from document" />
                 </div>
               </div>
               <DialogFooter>
@@ -151,10 +154,10 @@ export default function Proposals() {
                 <Button
                   onClick={() => {
                     setOpen(false);
-                    navigate("/proposals/1");
+                    navigate("/clients");
                   }}
                 >
-                  Import & Edit
+                  Create Client
                 </Button>
               </DialogFooter>
             </DialogContent>
