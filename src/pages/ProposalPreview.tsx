@@ -1,17 +1,30 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, DollarSign, Clock, MapPin, User, Phone, Mail, Users, ClipboardList, ShieldAlert, Wrench, Image, Video, BarChart3, GitCompare, HelpCircle, MessageSquare } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, Clock, MapPin, User, Phone, Mail, Users, ClipboardList, ShieldAlert, Wrench, Image, Video, BarChart3, GitCompare, HelpCircle, MessageSquare, Send } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useProposal } from "@/contexts/ProposalContext";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 
+interface SubmittedQuestion {
+  text: string;
+  timestamp: Date;
+}
+
 export default function ProposalPreview() {
   const navigate = useNavigate();
   const { proposalData, cards } = useProposal();
   const [question, setQuestion] = useState("");
+  const [submittedQuestions, setSubmittedQuestions] = useState<SubmittedQuestion[]>([]);
+
+  const handleSubmitQuestion = () => {
+    if (question.trim()) {
+      setSubmittedQuestions([...submittedQuestions, { text: question, timestamp: new Date() }]);
+      setQuestion("");
+    }
+  };
 
   const calculateItemTotal = (item: any) => {
     const subtotal = item.quantity * item.rate;
@@ -646,15 +659,33 @@ export default function ProposalPreview() {
                       onChange={(e) => setQuestion(e.target.value)}
                     />
                   </div>
-                  <Button className="w-full" onClick={() => {
-                    if (question.trim()) {
-                      // Handle submission
-                      setQuestion("");
-                    }
-                  }}>
+                  <Button className="w-full" onClick={handleSubmitQuestion}>
+                    <Send className="w-4 h-4 mr-2" />
                     Send Question
                   </Button>
                 </div>
+
+                {submittedQuestions.length > 0 && (
+                  <>
+                    <Separator />
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-sm">Your Questions</h4>
+                      <div className="space-y-3 max-h-64 overflow-y-auto">
+                        {submittedQuestions.map((q, index) => (
+                          <Card key={index} className="border-border/30 bg-muted/30">
+                            <CardContent className="p-3 space-y-1">
+                              <p className="text-sm text-foreground">{q.text}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {q.timestamp.toLocaleTimeString()} - {q.timestamp.toLocaleDateString()}
+                              </p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 <Separator />
                 <div className="space-y-2">
                   <h4 className="font-semibold text-sm">Quick Actions</h4>
