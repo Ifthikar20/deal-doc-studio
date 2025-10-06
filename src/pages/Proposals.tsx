@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Plus, Upload } from "lucide-react";
+import { FileText, Plus, Upload, LayoutGrid, List, MapPin, Calendar, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -15,16 +15,54 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import proposalBg1 from "@/assets/proposal-bg-1.jpg";
+import proposalBg2 from "@/assets/proposal-bg-2.jpg";
+import proposalBg3 from "@/assets/proposal-bg-3.jpg";
 
 const mockProposals = [
-  { id: 1, client: "Acme Corp", title: "Website Redesign", status: "Draft", date: "2025-10-05" },
-  { id: 2, client: "TechStart Inc", title: "Mobile App Development", status: "Sent", date: "2025-10-04" },
-  { id: 3, client: "Global Solutions", title: "Cloud Migration", status: "Approved", date: "2025-10-03" },
+  { 
+    id: 1, 
+    client: "Acme Corp", 
+    title: "Website Redesign", 
+    status: "Draft", 
+    date: "Oct 05, 2025",
+    time: "2:00 PM - 5:00 PM",
+    location: "San Francisco, CA",
+    value: "$50,000",
+    scope: "Full website redesign with modern UI/UX",
+    image: proposalBg1
+  },
+  { 
+    id: 2, 
+    client: "TechStart Inc", 
+    title: "Mobile App Development", 
+    status: "Sent", 
+    date: "Oct 04, 2025",
+    time: "10:00 AM - 12:00 PM",
+    location: "Austin, TX",
+    value: "$75,000",
+    scope: "Native iOS and Android app development",
+    image: proposalBg2
+  },
+  { 
+    id: 3, 
+    client: "Global Solutions", 
+    title: "Cloud Migration", 
+    status: "Approved", 
+    date: "Oct 03, 2025",
+    time: "9:00 AM - 11:00 AM",
+    location: "New York, NY",
+    value: "$120,000",
+    scope: "Complete infrastructure migration to AWS",
+    image: proposalBg3
+  },
 ];
 
 export default function Proposals() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"structured" | "list">("structured");
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -33,7 +71,27 @@ export default function Proposals() {
           <h1 className="text-3xl font-bold text-foreground mb-2">Proposals</h1>
           <p className="text-muted-foreground">Create and manage your proposals</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center border rounded-lg p-1 bg-muted/30">
+            <Button
+              variant={viewMode === "structured" ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("structured")}
+              className="gap-2"
+            >
+              <LayoutGrid className="w-4 h-4" />
+              Structured
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+              className="gap-2"
+            >
+              <List className="w-4 h-4" />
+              Title
+            </Button>
+          </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2">
@@ -89,123 +147,375 @@ export default function Proposals() {
         </TabsList>
 
         <TabsContent value="all" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockProposals.map((proposal) => (
-              <Card
-                key={proposal.id}
-                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
-                onClick={() => navigate(`/proposals/${proposal.id}`)}
-              >
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <FileText className="w-6 h-6 text-primary" />
+          {viewMode === "structured" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mockProposals.map((proposal) => (
+                <Card
+                  key={proposal.id}
+                  className="hover:shadow-xl transition-all cursor-pointer border-border/50 overflow-hidden group"
+                  onClick={() => navigate(`/proposals/${proposal.id}`)}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={proposal.image} 
+                      alt={proposal.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-white/90 text-foreground backdrop-blur-sm">
+                        {proposal.value}
+                      </Badge>
+                    </div>
                   </div>
-                  <CardTitle>{proposal.title}</CardTitle>
-                  <CardDescription>{proposal.client}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{proposal.date}</span>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        proposal.status === "Approved"
-                          ? "bg-green-500/10 text-green-600"
-                          : proposal.status === "Sent"
-                          ? "bg-blue-500/10 text-blue-600"
-                          : "bg-yellow-500/10 text-yellow-600"
-                      }`}
-                    >
-                      {proposal.status}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between mb-2">
+                      <CardTitle className="text-xl">{proposal.title}</CardTitle>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          proposal.status === "Approved"
+                            ? "bg-green-500/10 text-green-600"
+                            : proposal.status === "Sent"
+                            ? "bg-blue-500/10 text-blue-600"
+                            : "bg-yellow-500/10 text-yellow-600"
+                        }`}
+                      >
+                        {proposal.status}
+                      </span>
+                    </div>
+                    <CardDescription className="font-medium text-foreground/70">
+                      {proposal.client}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">{proposal.scope}</p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4" />
+                      <span>{proposal.location}</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        <span>{proposal.date}</span>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {proposal.time}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {mockProposals.map((proposal) => (
+                <Card
+                  key={proposal.id}
+                  className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                  onClick={() => navigate(`/proposals/${proposal.id}`)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <CardTitle className="text-lg">{proposal.title}</CardTitle>
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                proposal.status === "Approved"
+                                  ? "bg-green-500/10 text-green-600"
+                                  : proposal.status === "Sent"
+                                  ? "bg-blue-500/10 text-blue-600"
+                                  : "bg-yellow-500/10 text-yellow-600"
+                              }`}
+                            >
+                              {proposal.status}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>{proposal.client}</span>
+                            <span>•</span>
+                            <span>{proposal.date}</span>
+                            <span>•</span>
+                            <span className="font-semibold text-foreground">{proposal.value}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="draft" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockProposals.filter(p => p.status === "Draft").map((proposal) => (
-              <Card
-                key={proposal.id}
-                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
-                onClick={() => navigate(`/proposals/${proposal.id}`)}
-              >
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <FileText className="w-6 h-6 text-primary" />
+          {viewMode === "structured" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mockProposals.filter(p => p.status === "Draft").map((proposal) => (
+                <Card
+                  key={proposal.id}
+                  className="hover:shadow-xl transition-all cursor-pointer border-border/50 overflow-hidden group"
+                  onClick={() => navigate(`/proposals/${proposal.id}`)}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={proposal.image} 
+                      alt={proposal.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-white/90 text-foreground backdrop-blur-sm">
+                        {proposal.value}
+                      </Badge>
+                    </div>
                   </div>
-                  <CardTitle>{proposal.title}</CardTitle>
-                  <CardDescription>{proposal.client}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{proposal.date}</span>
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-600">
-                      {proposal.status}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between mb-2">
+                      <CardTitle className="text-xl">{proposal.title}</CardTitle>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-600">
+                        {proposal.status}
+                      </span>
+                    </div>
+                    <CardDescription className="font-medium text-foreground/70">
+                      {proposal.client}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">{proposal.scope}</p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4" />
+                      <span>{proposal.location}</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        <span>{proposal.date}</span>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {proposal.time}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {mockProposals.filter(p => p.status === "Draft").map((proposal) => (
+                <Card
+                  key={proposal.id}
+                  className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                  onClick={() => navigate(`/proposals/${proposal.id}`)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <CardTitle className="text-lg">{proposal.title}</CardTitle>
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-600">
+                              {proposal.status}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>{proposal.client}</span>
+                            <span>•</span>
+                            <span>{proposal.date}</span>
+                            <span>•</span>
+                            <span className="font-semibold text-foreground">{proposal.value}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="sent" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockProposals.filter(p => p.status === "Sent").map((proposal) => (
-              <Card
-                key={proposal.id}
-                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
-                onClick={() => navigate(`/proposals/${proposal.id}`)}
-              >
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <FileText className="w-6 h-6 text-primary" />
+          {viewMode === "structured" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mockProposals.filter(p => p.status === "Sent").map((proposal) => (
+                <Card
+                  key={proposal.id}
+                  className="hover:shadow-xl transition-all cursor-pointer border-border/50 overflow-hidden group"
+                  onClick={() => navigate(`/proposals/${proposal.id}`)}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={proposal.image} 
+                      alt={proposal.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-white/90 text-foreground backdrop-blur-sm">
+                        {proposal.value}
+                      </Badge>
+                    </div>
                   </div>
-                  <CardTitle>{proposal.title}</CardTitle>
-                  <CardDescription>{proposal.client}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{proposal.date}</span>
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600">
-                      {proposal.status}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between mb-2">
+                      <CardTitle className="text-xl">{proposal.title}</CardTitle>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600">
+                        {proposal.status}
+                      </span>
+                    </div>
+                    <CardDescription className="font-medium text-foreground/70">
+                      {proposal.client}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">{proposal.scope}</p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4" />
+                      <span>{proposal.location}</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        <span>{proposal.date}</span>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {proposal.time}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {mockProposals.filter(p => p.status === "Sent").map((proposal) => (
+                <Card
+                  key={proposal.id}
+                  className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                  onClick={() => navigate(`/proposals/${proposal.id}`)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <CardTitle className="text-lg">{proposal.title}</CardTitle>
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600">
+                              {proposal.status}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>{proposal.client}</span>
+                            <span>•</span>
+                            <span>{proposal.date}</span>
+                            <span>•</span>
+                            <span className="font-semibold text-foreground">{proposal.value}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="approved" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockProposals.filter(p => p.status === "Approved").map((proposal) => (
-              <Card
-                key={proposal.id}
-                className="hover:shadow-lg transition-all cursor-pointer border-border/50"
-                onClick={() => navigate(`/proposals/${proposal.id}`)}
-              >
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <FileText className="w-6 h-6 text-primary" />
+          {viewMode === "structured" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mockProposals.filter(p => p.status === "Approved").map((proposal) => (
+                <Card
+                  key={proposal.id}
+                  className="hover:shadow-xl transition-all cursor-pointer border-border/50 overflow-hidden group"
+                  onClick={() => navigate(`/proposals/${proposal.id}`)}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={proposal.image} 
+                      alt={proposal.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-white/90 text-foreground backdrop-blur-sm">
+                        {proposal.value}
+                      </Badge>
+                    </div>
                   </div>
-                  <CardTitle>{proposal.title}</CardTitle>
-                  <CardDescription>{proposal.client}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{proposal.date}</span>
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600">
-                      {proposal.status}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between mb-2">
+                      <CardTitle className="text-xl">{proposal.title}</CardTitle>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600">
+                        {proposal.status}
+                      </span>
+                    </div>
+                    <CardDescription className="font-medium text-foreground/70">
+                      {proposal.client}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">{proposal.scope}</p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4" />
+                      <span>{proposal.location}</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        <span>{proposal.date}</span>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {proposal.time}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {mockProposals.filter(p => p.status === "Approved").map((proposal) => (
+                <Card
+                  key={proposal.id}
+                  className="hover:shadow-lg transition-all cursor-pointer border-border/50"
+                  onClick={() => navigate(`/proposals/${proposal.id}`)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <CardTitle className="text-lg">{proposal.title}</CardTitle>
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600">
+                              {proposal.status}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>{proposal.client}</span>
+                            <span>•</span>
+                            <span>{proposal.date}</span>
+                            <span>•</span>
+                            <span className="font-semibold text-foreground">{proposal.value}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
