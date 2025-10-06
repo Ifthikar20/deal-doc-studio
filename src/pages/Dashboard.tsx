@@ -1,17 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardStats } from "@/components/DashboardStats";
-import { FileText, Plus, Clock, CheckCircle2 } from "lucide-react";
+import { FileText, Plus, Clock, CheckCircle2, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
-const recentProposals = [
+const allProposals = [
   { id: 1, client: "Acme Corp", status: "Draft", date: "2025-10-05", value: "$45,000" },
   { id: 2, client: "TechStart Inc", status: "Sent", date: "2025-10-04", value: "$32,500" },
   { id: 3, client: "Global Solutions", status: "Approved", date: "2025-10-03", value: "$78,000" },
+  { id: 4, client: "Innovate LLC", status: "Draft", date: "2025-10-02", value: "$56,000" },
+  { id: 5, client: "FutureTech", status: "Sent", date: "2025-10-01", value: "$92,000" },
 ];
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const recentProposals = allProposals.slice(0, 3);
+  const hasMoreProposals = allProposals.length > 3;
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -29,7 +40,51 @@ export default function Dashboard() {
               <CardTitle>Recent Proposals</CardTitle>
               <CardDescription>Your latest proposal activities</CardDescription>
             </div>
-            <Button onClick={() => navigate("/proposals")}>View All</Button>
+            {hasMoreProposals && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="gap-2">
+                    View All
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80 bg-background border-border z-50">
+                  {allProposals.map((proposal) => (
+                    <DropdownMenuItem
+                      key={proposal.id}
+                      className="cursor-pointer p-4"
+                      onClick={() => navigate(`/proposals/${proposal.id}`)}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">{proposal.client}</p>
+                            <p className="text-xs text-muted-foreground">{proposal.date}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{proposal.value}</span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                              proposal.status === "Approved"
+                                ? "bg-green-500/10 text-green-600"
+                                : proposal.status === "Sent"
+                                ? "bg-blue-500/10 text-blue-600"
+                                : "bg-yellow-500/10 text-yellow-600"
+                            }`}
+                          >
+                            {proposal.status}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

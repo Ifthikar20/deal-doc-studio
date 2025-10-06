@@ -1,5 +1,6 @@
 import { Users, FileText, Layout, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const stats = [
   {
@@ -33,10 +34,26 @@ const stats = [
 ];
 
 export function DashboardStats() {
+  const navigate = useNavigate();
+  
+  const handleCardClick = (title: string) => {
+    if (title === "Total Clients") {
+      navigate("/clients");
+    } else if (title === "Active Proposals") {
+      navigate("/proposals");
+    } else if (title === "Templates") {
+      navigate("/templates");
+    }
+  };
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat) => (
-        <Card key={stat.title} className="animate-fade-in border-border/50 hover:shadow-lg transition-shadow">
+        <Card 
+          key={stat.title} 
+          className="animate-fade-in border-border/50 hover:shadow-lg transition-shadow cursor-pointer"
+          onClick={() => handleCardClick(stat.title)}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {stat.title}
