@@ -26,18 +26,19 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here's an overview of your proposals.</p>
+      <div className="relative">
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 blur-2xl opacity-30 -z-10" />
+        <h1 className="text-4xl font-bold text-foreground mb-2 bg-clip-text">Dashboard</h1>
+        <p className="text-muted-foreground text-lg">Welcome back! Here's an overview of your proposals.</p>
       </div>
 
       <DashboardStats />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-border/50">
+        <Card className="lg:col-span-2 border-border/50 shadow-sm hover:shadow-[var(--shadow-elegant)] transition-shadow duration-300">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Recent Proposals</CardTitle>
+              <CardTitle className="text-xl">Recent Proposals</CardTitle>
               <CardDescription>Your latest proposal activities</CardDescription>
             </div>
             {hasMoreProposals && (
@@ -123,21 +124,21 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50">
+        <Card className="border-border/50 shadow-sm hover:shadow-[var(--shadow-elegant)] transition-shadow duration-300">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="text-xl">Quick Actions</CardTitle>
             <CardDescription>Start working on proposals</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button className="w-full justify-start gap-2" onClick={() => navigate("/proposals/new")}>
+            <Button className="w-full justify-start gap-2 shadow-sm hover:shadow-md transition-shadow" onClick={() => navigate("/proposals/new")}>
               <Plus className="w-4 h-4" />
               Create New Proposal
             </Button>
-            <Button variant="outline" className="w-full justify-start gap-2" onClick={() => navigate("/clients")}>
+            <Button variant="outline" className="w-full justify-start gap-2 hover:bg-accent/10 hover:text-accent hover:border-accent/30 transition-all" onClick={() => navigate("/clients")}>
               <Plus className="w-4 h-4" />
               Add New Client
             </Button>
-            <Button variant="outline" className="w-full justify-start gap-2" onClick={() => navigate("/templates")}>
+            <Button variant="outline" className="w-full justify-start gap-2 hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all" onClick={() => navigate("/templates")}>
               <FileText className="w-4 h-4" />
               Browse Templates
             </Button>
