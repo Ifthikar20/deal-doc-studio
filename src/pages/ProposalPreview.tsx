@@ -1,13 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, DollarSign, Clock, MapPin, User, Phone, Mail, Users, ClipboardList, ShieldAlert, Wrench, Image, Video } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, Clock, MapPin, User, Phone, Mail, Users, ClipboardList, ShieldAlert, Wrench, Image, Video, BarChart3, GitCompare, HelpCircle, MessageSquare } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useProposal } from "@/contexts/ProposalContext";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 export default function ProposalPreview() {
   const navigate = useNavigate();
   const { proposalData, cards } = useProposal();
+  const [question, setQuestion] = useState("");
 
   const calculateItemTotal = (item: any) => {
     const subtotal = item.quantity * item.rate;
@@ -360,6 +364,78 @@ export default function ProposalPreview() {
           </Card>
         );
 
+      case "infographic":
+        return (
+          <Card key={card.id} className="border-border/50">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-primary" />
+                <CardTitle className="text-2xl">{card.data.title}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {card.data.items.map((item, index) => (
+                  <div key={index} className="text-center p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                    <p className="text-3xl font-bold text-primary mb-2">{item.value}</p>
+                    <p className="text-sm text-muted-foreground">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      case "beforeafter":
+        return (
+          <Card key={card.id} className="border-border/50">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <GitCompare className="w-5 h-5 text-primary" />
+                <CardTitle className="text-2xl">{card.data.title}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-border/30 bg-muted/30">
+                  <CardContent className="pt-6 space-y-3">
+                    <h4 className="font-semibold text-lg text-muted-foreground">{card.data.beforeTitle}</h4>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{card.data.beforeDescription}</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
+                  <CardContent className="pt-6 space-y-3">
+                    <h4 className="font-semibold text-lg text-primary">{card.data.afterTitle}</h4>
+                    <p className="text-sm text-foreground whitespace-pre-wrap">{card.data.afterDescription}</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      case "faq":
+        return (
+          <Card key={card.id} className="border-border/50">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-primary" />
+                <CardTitle className="text-2xl">{card.data.title}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {card.data.items.map((item, index) => (
+                  <div key={index} className="space-y-2 pb-4 border-b border-border/30 last:border-0 last:pb-0">
+                    <h4 className="font-semibold text-lg">{item.question}</h4>
+                    <p className="text-muted-foreground">{item.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+
       default:
         return null;
     }
@@ -367,7 +443,10 @@ export default function ProposalPreview() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <div className="max-w-4xl mx-auto p-8 space-y-8 animate-fade-in">
+      <div className="max-w-7xl mx-auto p-8 space-y-8 animate-fade-in">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
         {/* Header with Back Button */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate(-1)} className="gap-2">
@@ -526,21 +605,75 @@ export default function ProposalPreview() {
           </Card>
         )}
 
-        {/* Call to Action */}
-        <Card className="border-border/50 bg-gradient-to-br from-primary/10 to-primary/5">
-          <CardContent className="p-8 text-center space-y-4">
-            <h3 className="text-2xl font-bold">Ready to Get Started?</h3>
-            <p className="text-muted-foreground">
-              We're excited to work with you on this project. Please review the proposal and let us know if you have any questions.
-            </p>
-            <div className="flex gap-4 justify-center pt-4">
-              <Button size="lg" variant="outline">
-                Request Changes
-              </Button>
-              <Button size="lg">Accept Proposal</Button>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Call to Action */}
+            <Card className="border-border/50 bg-gradient-to-br from-primary/10 to-primary/5">
+              <CardContent className="p-8 text-center space-y-4">
+                <h3 className="text-2xl font-bold">Ready to Get Started?</h3>
+                <p className="text-muted-foreground">
+                  We're excited to work with you on this project. Please review the proposal and let us know if you have any questions.
+                </p>
+                <div className="flex gap-4 justify-center pt-4">
+                  <Button size="lg" variant="outline">
+                    Request Changes
+                  </Button>
+                  <Button size="lg">Accept Proposal</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Question/Request Sidebar */}
+          <div className="lg:col-span-1">
+            <Card className="border-border/50 sticky top-8">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-primary" />
+                  <CardTitle>Questions or Requests?</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Have a question about this proposal or need clarification on any section? Let us know!
+                </p>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="question">Your Question or Request</Label>
+                    <Textarea
+                      id="question"
+                      placeholder="e.g., Can you provide more details about the timeline for Phase 2?"
+                      rows={6}
+                      value={question}
+                      onChange={(e) => setQuestion(e.target.value)}
+                    />
+                  </div>
+                  <Button className="w-full" onClick={() => {
+                    if (question.trim()) {
+                      // Handle submission
+                      setQuestion("");
+                    }
+                  }}>
+                    Send Question
+                  </Button>
+                </div>
+                <Separator />
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm">Quick Actions</h4>
+                  <div className="space-y-2">
+                    <Button variant="outline" size="sm" className="w-full justify-start">
+                      Request Price Adjustment
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-start">
+                      Request Timeline Change
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-start">
+                      Schedule a Call
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

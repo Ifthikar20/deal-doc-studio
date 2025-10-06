@@ -25,6 +25,9 @@ import ImplementationPlanCard from "@/components/cards/ImplementationPlanCard";
 import RiskMitigationCard from "@/components/cards/RiskMitigationCard";
 import SupportMaintenanceCard from "@/components/cards/SupportMaintenanceCard";
 import TextSectionCard from "@/components/cards/TextSectionCard";
+import InfographicSummaryCard from "@/components/cards/InfographicSummaryCard";
+import BeforeAfterCard from "@/components/cards/BeforeAfterCard";
+import FAQCard from "@/components/cards/FAQCard";
 
 export default function ProposalEditor() {
   const navigate = useNavigate();
@@ -86,6 +89,12 @@ export default function ProposalEditor() {
         return <SupportMaintenanceCard data={card.data} onUpdate={(data) => updateCard(card.id, data)} onRemove={() => removeCard(card.id)} />;
       case "text":
         return <TextSectionCard data={card.data} onUpdate={(data) => updateCard(card.id, data)} onRemove={() => removeCard(card.id)} />;
+      case "infographic":
+        return <InfographicSummaryCard data={card.data} onUpdate={(data) => updateCard(card.id, data)} onRemove={() => removeCard(card.id)} />;
+      case "beforeafter":
+        return <BeforeAfterCard data={card.data} onUpdate={(data) => updateCard(card.id, data)} onRemove={() => removeCard(card.id)} />;
+      case "faq":
+        return <FAQCard data={card.data} onUpdate={(data) => updateCard(card.id, data)} onRemove={() => removeCard(card.id)} />;
     }
   };
 
@@ -308,6 +317,18 @@ export default function ProposalEditor() {
                 <DropdownMenuItem onClick={() => addCard("support")}>
                   <FileText className="w-4 h-4 mr-2" />
                   Support & Maintenance
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addCard("infographic")}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Infographic Summary
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addCard("beforeafter")}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Before & After Scenario
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addCard("faq")}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  FAQ
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

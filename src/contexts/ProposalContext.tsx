@@ -8,6 +8,9 @@ import { ImplementationStep } from "@/components/cards/ImplementationPlanCard";
 import { Risk } from "@/components/cards/RiskMitigationCard";
 import { SupportItem } from "@/components/cards/SupportMaintenanceCard";
 import { TextSectionData } from "@/components/cards/TextSectionCard";
+import { InfographicSummaryData } from "@/components/cards/InfographicSummaryCard";
+import { BeforeAfterData } from "@/components/cards/BeforeAfterCard";
+import { FAQData } from "@/components/cards/FAQCard";
 
 export type ProposalCard =
   | { id: string; type: "timeline"; data: TimelinePhase[] }
@@ -18,7 +21,10 @@ export type ProposalCard =
   | { id: string; type: "implementation"; data: ImplementationStep[] }
   | { id: string; type: "risk"; data: Risk[] }
   | { id: string; type: "support"; data: SupportItem[] }
-  | { id: string; type: "text"; data: TextSectionData };
+  | { id: string; type: "text"; data: TextSectionData }
+  | { id: string; type: "infographic"; data: InfographicSummaryData }
+  | { id: string; type: "beforeafter"; data: BeforeAfterData }
+  | { id: string; type: "faq"; data: FAQData };
 
 interface ProposalData {
   title: string;
@@ -127,6 +133,12 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
           return { id: Date.now().toString(), type: "support", data: [{ title: "", description: "", duration: "", cost: "" }] };
         case "text":
           return { id: Date.now().toString(), type: "text", data: { title: "New Section", content: "" } };
+        case "infographic":
+          return { id: Date.now().toString(), type: "infographic", data: { title: "Key Benefits", items: [] } };
+        case "beforeafter":
+          return { id: Date.now().toString(), type: "beforeafter", data: { title: "Transform Your Business", beforeTitle: "Before", beforeDescription: "", afterTitle: "After", afterDescription: "" } };
+        case "faq":
+          return { id: Date.now().toString(), type: "faq", data: { title: "Frequently Asked Questions", items: [] } };
       }
     })();
     setCards([...cards, newCard]);
