@@ -436,7 +436,11 @@ export default function ProposalEditor() {
               </div>
             </div>
             <div className="pt-4 space-y-2">
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => navigate(`/proposals/${id}/preview`)}
+              >
                 Preview Proposal
               </Button>
               <Button variant="outline" className="w-full">

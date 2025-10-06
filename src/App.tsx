@@ -11,6 +11,7 @@ import ClientDetail from "./pages/ClientDetail";
 import Templates from "./pages/Templates";
 import Proposals from "./pages/Proposals";
 import ProposalEditor from "./pages/ProposalEditor";
+import ProposalPreview from "./pages/ProposalPreview";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
                   <Route path="/templates" element={<Templates />} />
                   <Route path="/proposals" element={<Proposals />} />
                   <Route path="/proposals/:id" element={<ProposalEditor />} />
+                  <Route path="/proposals/:id/preview" element={<ProposalPreview />} />
                   <Route path="/proposals/new" element={<ProposalEditor />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
