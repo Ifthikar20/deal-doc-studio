@@ -20,6 +20,15 @@ interface PriceItem {
   description: string;
   quantity: number;
   rate: number;
+  duration: string;
+  discount: number;
+  notes: string[];
+}
+
+interface PricingSection {
+  id: string;
+  title: string;
+  items: PriceItem[];
 }
 
 interface ProposalSection {
@@ -35,17 +44,33 @@ export default function ProposalEditor() {
   const [proposalData, setProposalData] = useState({
     title: "Website Redesign",
     client: "Acme Corp",
+    clientAddress: "123 Main St, Suite 100, City, State 12345",
     description: "Complete website redesign with modern UI/UX",
+    jobNumber: "302798",
+    preparedBy: "Your Name",
+    version: "1.0",
+    eventLocation: "Client Office",
+    eventAddress: "123 Event Venue, City, State 12345",
+    eventStartDate: "",
+    eventEndDate: "",
+    contactName: "",
+    contactPhone: "",
+    contactEmail: "",
     timeline: [
       { phase: "Discovery & Planning", duration: "2 weeks", tasks: "Requirements gathering, research" },
       { phase: "Design", duration: "3 weeks", tasks: "Wireframes, mockups, prototypes" },
       { phase: "Development", duration: "6 weeks", tasks: "Frontend and backend implementation" },
     ] as TimelinePhase[],
-    priceBreakdown: [
-      { description: "UI/UX Design", quantity: 1, rate: 15000 },
-      { description: "Frontend Development", quantity: 1, rate: 20000 },
-      { description: "Backend Development", quantity: 1, rate: 15000 },
-    ] as PriceItem[],
+    pricingSections: [
+      {
+        id: "1",
+        title: "Main Deliverables",
+        items: [
+          { description: "UI/UX Design", quantity: 1, rate: 15000, duration: "2 weeks", discount: 0, notes: [] },
+          { description: "Frontend Development", quantity: 1, rate: 20000, duration: "3 weeks", discount: 0, notes: [] },
+        ],
+      },
+    ] as PricingSection[],
     sections: [
       { id: "1", title: "Project Overview", content: "This section describes the overall project scope and objectives." },
       { id: "2", title: "Deliverables", content: "List of all deliverables and milestones." },
@@ -71,22 +96,104 @@ export default function ProposalEditor() {
     setProposalData({ ...proposalData, timeline: newTimeline });
   };
 
-  const addPriceItem = () => {
+  const addPricingSection = () => {
+    const newSection: PricingSection = {
+      id: Date.now().toString(),
+      title: "New Section",
+      items: [],
+    };
     setProposalData({
       ...proposalData,
-      priceBreakdown: [...proposalData.priceBreakdown, { description: "", quantity: 1, rate: 0 }],
+      pricingSections: [...proposalData.pricingSections, newSection],
     });
   };
 
-  const removePriceItem = (index: number) => {
-    const newPriceBreakdown = proposalData.priceBreakdown.filter((_, i) => i !== index);
-    setProposalData({ ...proposalData, priceBreakdown: newPriceBreakdown });
+  const removePricingSection = (sectionId: string) => {
+    const newSections = proposalData.pricingSections.filter((s) => s.id !== sectionId);
+    setProposalData({ ...proposalData, pricingSections: newSections });
   };
 
-  const updatePriceItem = (index: number, field: keyof PriceItem, value: string | number) => {
-    const newPriceBreakdown = [...proposalData.priceBreakdown];
-    newPriceBreakdown[index] = { ...newPriceBreakdown[index], [field]: value };
-    setProposalData({ ...proposalData, priceBreakdown: newPriceBreakdown });
+  const updatePricingSection = (sectionId: string, title: string) => {
+    const newSections = proposalData.pricingSections.map((s) =>
+      s.id === sectionId ? { ...s, title } : s
+    );
+    setProposalData({ ...proposalData, pricingSections: newSections });
+  };
+
+  const addPriceItem = (sectionId: string) => {
+    const newSections = proposalData.pricingSections.map((s) =>
+      s.id === sectionId
+        ? { ...s, items: [...s.items, { description: "", quantity: 1, rate: 0, duration: "1 Day", discount: 0, notes: [] }] }
+        : s
+    );
+    setProposalData({ ...proposalData, pricingSections: newSections });
+  };
+
+  const removePriceItem = (sectionId: string, itemIndex: number) => {
+    const newSections = proposalData.pricingSections.map((s) =>
+      s.id === sectionId
+        ? { ...s, items: s.items.filter((_, i) => i !== itemIndex) }
+        : s
+    );
+    setProposalData({ ...proposalData, pricingSections: newSections });
+  };
+
+  const updatePriceItem = (sectionId: string, itemIndex: number, field: keyof PriceItem, value: string | number | string[]) => {
+    const newSections = proposalData.pricingSections.map((s) =>
+      s.id === sectionId
+        ? {
+            ...s,
+            items: s.items.map((item, i) =>
+              i === itemIndex ? { ...item, [field]: value } : item
+            ),
+          }
+        : s
+    );
+    setProposalData({ ...proposalData, pricingSections: newSections });
+  };
+
+  const addNoteToItem = (sectionId: string, itemIndex: number) => {
+    const newSections = proposalData.pricingSections.map((s) =>
+      s.id === sectionId
+        ? {
+            ...s,
+            items: s.items.map((item, i) =>
+              i === itemIndex ? { ...item, notes: [...item.notes, ""] } : item
+            ),
+          }
+        : s
+    );
+    setProposalData({ ...proposalData, pricingSections: newSections });
+  };
+
+  const updateNote = (sectionId: string, itemIndex: number, noteIndex: number, value: string) => {
+    const newSections = proposalData.pricingSections.map((s) =>
+      s.id === sectionId
+        ? {
+            ...s,
+            items: s.items.map((item, i) =>
+              i === itemIndex
+                ? { ...item, notes: item.notes.map((note, ni) => (ni === noteIndex ? value : note)) }
+                : item
+            ),
+          }
+        : s
+    );
+    setProposalData({ ...proposalData, pricingSections: newSections });
+  };
+
+  const removeNote = (sectionId: string, itemIndex: number, noteIndex: number) => {
+    const newSections = proposalData.pricingSections.map((s) =>
+      s.id === sectionId
+        ? {
+            ...s,
+            items: s.items.map((item, i) =>
+              i === itemIndex ? { ...item, notes: item.notes.filter((_, ni) => ni !== noteIndex) } : item
+            ),
+          }
+        : s
+    );
+    setProposalData({ ...proposalData, pricingSections: newSections });
   };
 
   const addSection = () => {
@@ -113,11 +220,18 @@ export default function ProposalEditor() {
     setProposalData({ ...proposalData, sections: newSections });
   };
 
-  const calculateTotal = () => {
-    return proposalData.priceBreakdown.reduce(
-      (sum, item) => sum + item.quantity * item.rate,
-      0
-    );
+  const calculateItemTotal = (item: PriceItem) => {
+    const subtotal = item.quantity * item.rate;
+    const discountAmount = subtotal * (item.discount / 100);
+    return subtotal - discountAmount;
+  };
+
+  const calculateSectionTotal = (section: PricingSection) => {
+    return section.items.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+  };
+
+  const calculateGrandTotal = () => {
+    return proposalData.pricingSections.reduce((sum, section) => sum + calculateSectionTotal(section), 0);
   };
 
   const hasTermsAndConditions = proposalData.termsAndConditions.trim().length > 0;
@@ -147,6 +261,9 @@ export default function ProposalEditor() {
             <Save className="w-4 h-4" />
             Save Draft
           </Button>
+          <Button variant="outline" onClick={() => navigate(`/proposals/${id}/preview`)} className="gap-2">
+            Preview
+          </Button>
           <Button onClick={handleSend} className="gap-2" disabled={!hasTermsAndConditions}>
             <Send className="w-4 h-4" />
             Send to Client
@@ -170,22 +287,128 @@ export default function ProposalEditor() {
               <CardTitle>Proposal Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={proposalData.title}
-                  onChange={(e) => setProposalData({ ...proposalData, title: e.target.value })}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Project Title</Label>
+                  <Input
+                    id="title"
+                    value={proposalData.title}
+                    onChange={(e) => setProposalData({ ...proposalData, title: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="jobNumber">Job Number</Label>
+                  <Input
+                    id="jobNumber"
+                    value={proposalData.jobNumber}
+                    onChange={(e) => setProposalData({ ...proposalData, jobNumber: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="client">Client Name</Label>
+                  <Input
+                    id="client"
+                    value={proposalData.client}
+                    onChange={(e) => setProposalData({ ...proposalData, client: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="preparedBy">Prepared By</Label>
+                  <Input
+                    id="preparedBy"
+                    value={proposalData.preparedBy}
+                    onChange={(e) => setProposalData({ ...proposalData, preparedBy: e.target.value })}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="client">Client</Label>
+                <Label htmlFor="clientAddress">Client Address</Label>
                 <Input
-                  id="client"
-                  value={proposalData.client}
-                  onChange={(e) => setProposalData({ ...proposalData, client: e.target.value })}
+                  id="clientAddress"
+                  value={proposalData.clientAddress}
+                  onChange={(e) => setProposalData({ ...proposalData, clientAddress: e.target.value })}
                 />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="eventLocation">Event/Project Location</Label>
+                  <Input
+                    id="eventLocation"
+                    value={proposalData.eventLocation}
+                    onChange={(e) => setProposalData({ ...proposalData, eventLocation: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="version">Version</Label>
+                  <Input
+                    id="version"
+                    value={proposalData.version}
+                    onChange={(e) => setProposalData({ ...proposalData, version: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="eventAddress">Event Address</Label>
+                <Input
+                  id="eventAddress"
+                  value={proposalData.eventAddress}
+                  onChange={(e) => setProposalData({ ...proposalData, eventAddress: e.target.value })}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="eventStartDate">Event Start Date</Label>
+                  <Input
+                    id="eventStartDate"
+                    type="date"
+                    value={proposalData.eventStartDate}
+                    onChange={(e) => setProposalData({ ...proposalData, eventStartDate: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="eventEndDate">Event End Date</Label>
+                  <Input
+                    id="eventEndDate"
+                    type="date"
+                    value={proposalData.eventEndDate}
+                    onChange={(e) => setProposalData({ ...proposalData, eventEndDate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="contactName">Contact Name</Label>
+                  <Input
+                    id="contactName"
+                    value={proposalData.contactName}
+                    onChange={(e) => setProposalData({ ...proposalData, contactName: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contactPhone">Contact Phone</Label>
+                  <Input
+                    id="contactPhone"
+                    value={proposalData.contactPhone}
+                    onChange={(e) => setProposalData({ ...proposalData, contactPhone: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contactEmail">Contact Email</Label>
+                  <Input
+                    id="contactEmail"
+                    type="email"
+                    value={proposalData.contactEmail}
+                    onChange={(e) => setProposalData({ ...proposalData, contactEmail: e.target.value })}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -317,65 +540,171 @@ export default function ProposalEditor() {
               <Card className="border-border/50">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Price Breakdown</CardTitle>
-                  <Button variant="outline" size="sm" onClick={addPriceItem} className="gap-2">
+                  <Button variant="outline" size="sm" onClick={addPricingSection} className="gap-2">
                     <Plus className="w-4 h-4" />
-                    Add Item
+                    Add Section
                   </Button>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {proposalData.priceBreakdown.map((item, index) => (
-                    <Card key={index} className="border-border/50">
-                      <CardContent className="pt-6">
-                        <div className="flex items-start gap-4">
-                          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-2 md:col-span-2">
-                              <Label>Description</Label>
-                              <Input
-                                value={item.description}
-                                onChange={(e) => updatePriceItem(index, "description", e.target.value)}
-                                placeholder="Service or item description"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Quantity</Label>
-                              <Input
-                                type="number"
-                                value={item.quantity}
-                                onChange={(e) => updatePriceItem(index, "quantity", parseInt(e.target.value) || 0)}
-                                min="1"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Rate ($)</Label>
-                              <Input
-                                type="number"
-                                value={item.rate}
-                                onChange={(e) => updatePriceItem(index, "rate", parseFloat(e.target.value) || 0)}
-                                min="0"
-                              />
-                            </div>
-                            <div className="space-y-2 md:col-span-2">
-                              <Label>Total</Label>
-                              <div className="flex h-10 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium">
-                                ${(item.quantity * item.rate).toLocaleString()}
-                              </div>
-                            </div>
+                <CardContent className="space-y-6">
+                  {proposalData.pricingSections.map((section) => (
+                    <Card key={section.id} className="border-border/50">
+                      <CardContent className="pt-6 space-y-4">
+                        <div className="flex items-center justify-between gap-4">
+                          <Input
+                            value={section.title}
+                            onChange={(e) => updatePricingSection(section.id, e.target.value)}
+                            placeholder="Section name (e.g., Main Ballroom)"
+                            className="text-lg font-semibold"
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => addPriceItem(section.id)}
+                              className="gap-2"
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add Item
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removePricingSection(section.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removePriceItem(index)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                        </div>
+
+                        {section.items.map((item, itemIndex) => (
+                          <Card key={itemIndex} className="border-border/50 bg-muted/20">
+                            <CardContent className="pt-4 space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                <div className="space-y-2 md:col-span-2">
+                                  <Label className="text-xs">Description</Label>
+                                  <Input
+                                    value={item.description}
+                                    onChange={(e) => updatePriceItem(section.id, itemIndex, "description", e.target.value)}
+                                    placeholder="Item description"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Quantity</Label>
+                                  <Input
+                                    type="number"
+                                    value={item.quantity}
+                                    onChange={(e) => updatePriceItem(section.id, itemIndex, "quantity", parseInt(e.target.value) || 0)}
+                                    min="1"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Duration</Label>
+                                  <Input
+                                    value={item.duration}
+                                    onChange={(e) => updatePriceItem(section.id, itemIndex, "duration", e.target.value)}
+                                    placeholder="e.g., 2 Days"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Rate ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={item.rate}
+                                    onChange={(e) => updatePriceItem(section.id, itemIndex, "rate", parseFloat(e.target.value) || 0)}
+                                    min="0"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Discount (%)</Label>
+                                  <Input
+                                    type="number"
+                                    value={item.discount}
+                                    onChange={(e) => updatePriceItem(section.id, itemIndex, "discount", parseFloat(e.target.value) || 0)}
+                                    min="0"
+                                    max="100"
+                                  />
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                  <Label className="text-xs">Subtotal</Label>
+                                  <div className="flex h-10 items-center rounded-md border border-input bg-background px-3 text-sm font-medium">
+                                    ${(item.quantity * item.rate).toLocaleString()}
+                                  </div>
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                  <Label className="text-xs">Discount Amount</Label>
+                                  <div className="flex h-10 items-center rounded-md border border-input bg-background px-3 text-sm font-medium text-destructive">
+                                    -${((item.quantity * item.rate * item.discount) / 100).toLocaleString()}
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Total</Label>
+                                  <div className="flex h-10 items-center rounded-md border border-input bg-primary/5 px-3 text-sm font-bold text-primary">
+                                    ${calculateItemTotal(item).toLocaleString()}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Notes */}
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-xs">Notes</Label>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => addNoteToItem(section.id, itemIndex)}
+                                    className="h-7 gap-1"
+                                  >
+                                    <Plus className="w-3 h-3" />
+                                    Add Note
+                                  </Button>
+                                </div>
+                                {item.notes.map((note, noteIndex) => (
+                                  <div key={noteIndex} className="flex gap-2">
+                                    <Input
+                                      value={note}
+                                      onChange={(e) => updateNote(section.id, itemIndex, noteIndex, e.target.value)}
+                                      placeholder="Add a note..."
+                                      className="text-sm"
+                                    />
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => removeNote(section.id, itemIndex, noteIndex)}
+                                      className="h-9 w-9 text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <div className="flex justify-end">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removePriceItem(section.id, itemIndex)}
+                                  className="text-destructive hover:text-destructive gap-2"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                  Remove Item
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+
+                        <div className="flex justify-end items-center gap-4 p-4 bg-primary/5 rounded-lg">
+                          <span className="text-sm font-semibold text-muted-foreground">Section Total:</span>
+                          <span className="text-lg font-bold text-primary">${calculateSectionTotal(section).toLocaleString()}</span>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
-                  <div className="flex justify-end items-center gap-4 p-4 bg-primary/5 rounded-lg">
-                    <span className="text-lg font-semibold text-muted-foreground">Total:</span>
-                    <span className="text-2xl font-bold text-primary">${calculateTotal().toLocaleString()}</span>
+
+                  <div className="flex justify-end items-center gap-4 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border-2 border-primary/20">
+                    <span className="text-xl font-bold text-foreground">Grand Total:</span>
+                    <span className="text-3xl font-bold text-primary">${calculateGrandTotal().toLocaleString()}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -432,7 +761,7 @@ export default function ProposalEditor() {
               <DollarSign className="w-5 h-5 text-primary" />
               <div>
                 <p className="text-sm font-medium text-foreground">Total Value</p>
-                <p className="text-lg font-bold text-primary">${calculateTotal().toLocaleString()}</p>
+                <p className="text-lg font-bold text-primary">${calculateGrandTotal().toLocaleString()}</p>
               </div>
             </div>
             <div className="pt-4 space-y-2">
